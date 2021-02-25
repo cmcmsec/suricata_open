@@ -1,0 +1,156 @@
+{%extends "base.html"%}
+
+{% block headercss %}
+
+<style>
+
+    td{word-break:break-all;}
+    </style>
+
+
+{% endblock %}
+
+{% block contentWrapper%}
+
+<div class="content-wrapper">
+    <section class="content">
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="box">
+
+
+            <div class="box-header">
+              <h3 style="float:left" class="box-title">suricata监控列表</h3>
+
+                    <a style="float:right" href="/suricata/monitor/">&nbsp;&nbsp;&nbsp;&nbsp;suricata监控配置</a>
+
+            </div>
+            <div class="box-body">
+
+                <table id="suricata_list_table" class="table table-bordered table-hover">
+                <thead>
+                <tr>
+				  <th style="white-space:nowrap">ID</th>
+                  <th style="white-space:nowrap">SID</th>
+				  <th style="white-space:nowrap">备注</th>
+                  <th style="white-space:nowrap">统计时间段（分钟）</th>
+                  <th style="white-space:nowrap">告警阈值</th>
+                    <th style="white-space:nowrap">操作</th>
+
+                </tr>
+                </thead>
+                <tbody>
+
+
+				{% for s in  suriobjs%}
+						<tr>
+							<td>{{s.id}}</td>
+							<td>{{s.sid}}</td>
+							<td style="white-space:nowrap">
+							{{s.tips}}
+							</td>
+							<td style="white-space:nowrap">
+                                {{s.times}}
+							</td>
+
+							<td >{{s.cnts}}</td>
+
+                            <td>
+                                <a href="/suricata/edit_mornitor/{{s.id}}/">编辑</a> &nbsp;&nbsp;
+								<a onclick="delSuri('{{s.id}}')">删除</a>
+                            </td>
+						</tr>
+				{% endfor %}
+
+
+
+
+                </tbody>
+
+              </table>
+            </div>
+
+
+
+
+
+
+
+            <!-- /.box -->
+          </div>
+		</div>
+
+	</div> <!-- /.row-->
+
+
+
+
+
+	</section>
+</div>
+{% endblock %}
+{% block bodyjs %}
+
+<script src="/static/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="/static/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    <script src="/static/bower_components/datatables.net-bs/js/dataTables.buttons.min.js"></script>
+    <script src="/static/bower_components/datatables.net-bs/js/jszip.min.js"></script>
+    <script src="/static/bower_components/datatables.net-bs/js/buttons.html5.min.js"></script>
+
+    <script src="/static/bower_components/moment/min/moment.min.js"></script>
+    <script src="/static/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
+
+<script>
+
+function mFunc(){
+    var datatable = $("#xray_list_table").DataTable();
+    if (datatable) {
+        datatable.clear();    //清空数据
+        datatable.destroy();         //销毁datatable
+    }
+    tabledata();
+    //table.ajax.reload();
+}
+
+  $(function () {
+
+    $('#example').DataTable({
+      'paging'      : true,
+      'lengthChange': false,
+      'searching'   : false,
+      'ordering'    : true,
+      'info'        : true,
+      'autoWidth'   : false
+    })
+	$('#suricata_list_table').DataTable({
+		"pageLength": 25,
+		'autoWidth'   : true
+	})
+  })
+
+
+</script>
+<script>
+    function delSuri(r_id){
+	if(window.confirm('确定删除？')){
+		$.ajax({
+			type: "GET",
+
+			url:"/suricata/delmor/"+r_id+'/',
+				success:function (result) {
+					if (result.code == 0) {
+						alert('删除成功');
+						window.location.href="/suricata/morlist/";
+					}else{
+						alert('异常，请检查');
+					};
+
+				},
+				error:function(){
+					alert("异常");
+				}
+		});
+	}
+}
+</script>
+{% endblock %}
